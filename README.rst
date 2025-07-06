@@ -35,24 +35,31 @@ Screenshots
 
 
 Preparation
-==========
+===========
 
 Generation of the initial file :
 
-- get the channels numbers ;
+- get the channel numbers;
 - insert them in the script `tools/make-channels-conf.sh`
-- execute the script :
+- execute the script:
 
 .. code_block::
 
     tools/make-channels-conf.sh > transmitters/xx-place.conf
 
-Generation of the channels configuration file :
+Generation of the channels configuration file:
 
 .. code_block::
 
    cd transmitters
    dvbv5-scan -F -I channel -O zap -o channels-place.conf xx-place.conf
+
+Manual recording
+================
+
+.. code_block::
+
+    /usr/bin/dvbv5-zap -a 0 -I zap -o film.ts -c transmitters/channels-lescars.conf -t 7200 LCP
 
 Downloads
 =========
