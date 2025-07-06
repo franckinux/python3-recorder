@@ -7,13 +7,9 @@ language = "en"
 simulate = false
 port = 8080
 
-[[logger]]
+[logger]
+aiohttp = "WARNING"
 
-[logger.root]
-level = "DEBUG"
-
-[logger.recorder.record]
-level = "DEBUG"
-
-[logger.recorder.wakeup]
-level = "INFO"
+[logger.recorder]
+record = "DEBUG"
+wakeup = "DEBUG"

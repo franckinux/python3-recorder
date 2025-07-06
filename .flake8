@@ -1,2 +1,5 @@
 [flake8]
-extend-ignore = E501,W605
+ignore = E501, W503, W504
+exclude = .git,.mypy_cache,.pytest_cache,.venv,__pycache__,assets,logs,reporting,requirements,ssh,tests/samples
+# per-file-ignores =
+max-complexity = 30

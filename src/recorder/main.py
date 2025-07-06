@@ -66,6 +66,27 @@ def setup_i18n(path: Path, locale):
     set_locale_detector(partial_locale_detector)
 
 
+def _set_loggers_level(config_loggers: dict, module_path: list):
+    # set log level of modules logger
+    for lg_name, lg_config in config_loggers.items():
+        if isinstance(lg_config, dict):
+            module_path.append(lg_name)
+            _set_loggers_level(lg_config, module_path)
+        elif isinstance(lg_config, str):
+            this_module_path = '.'.join(module_path + [lg_name])
+            try:
+                importlib.import_module(this_module_path)
+            except ModuleNotFoundError:
+                logger.warning(f"module {this_module_path} not found")
+                continue
+
+            level = getattr(logging, lg_config)
+            if this_module_path in logging.Logger.manager.loggerDict.keys():
+                logging.getLogger(this_module_path).setLevel(level)
+        else:
+            raise Exception("incorrect type")
+
+
 async def init():
     global path
     global record
@@ -73,16 +94,7 @@ async def init():
 
     path = Path(__file__).resolve().parent.parent
 
-    logging.getLogger("aiohttp").setLevel(logging.WARNING)
-
-    # set log level of modules' loggers
-    for lg_name, lg_level in config.loggers.items():
-        if lg_name == "root":
-            logger.setLevel(lg_level)
-        else:
-            module = sys.modules[lg_name]
-            module_logger = getattr(module, "logger")
-            module_logger.setLevel(lg_level)
+    _set_loggers_level(config.loggers, [])
 
     record = Recorder(path)
     wakeup = Awakenings(path)
