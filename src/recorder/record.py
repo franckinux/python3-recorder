@@ -11,11 +11,11 @@ from recorder.utils import set_locale
 
 logger = logging.getLogger(__name__)
 
-RECORDINGS_BIN_FILENAME = "data/recordings.bin"
+RECORDINGS_BIN_FILENAME = "recordings.bin"
 
 
 class Recorder:
-    def __init__(self, path: Path):
+    def __init__(self):
         self.max_duration = config.general.max_duration
         self.dvb_adapter_number = config.general.dvb_adapter_number
         self.channels_conf = config.general.channels_conf
@@ -23,7 +23,8 @@ class Recorder:
         self.simulate = config.general.simulate
         self.busy = [False] * self.dvb_adapter_number
         self.recordings: dict[int, dict] = {}
-        self.recordings_filename = Path(path, RECORDINGS_BIN_FILENAME)
+        data_directory = Path(config.general.data_directory)
+        self.recordings_filename = Path(data_directory, RECORDINGS_BIN_FILENAME)
 
         self.id = 1
 

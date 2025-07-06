@@ -9,6 +9,7 @@ class GeneralConfig:
     dvb_adapter_number: int
     channels_conf: str
     max_duration: int
+    data_directory: str
     recording_directory: str
     language: str
     simulate: bool

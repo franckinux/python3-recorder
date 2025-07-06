@@ -2,6 +2,7 @@ import argparse
 import asyncio
 from datetime import datetime
 from functools import partial
+import importlib
 import logging
 from pathlib import Path
 import sys
@@ -43,7 +44,6 @@ routes = web.RouteTableDef()
 
 record = None
 wakeup = None
-path = None
 
 logger = logging.getLogger()
 handler = logging.StreamHandler(stream=sys.stdout)
@@ -59,7 +59,7 @@ def locale_detector(request, locale):
 
 def setup_i18n(path: Path, locale):
     set_default_locale(DEFAULT_LANGUAGE)
-    locales_dir = Path(path, "locales", "translations")
+    locales_dir = Path(path, "recorder/locales", "translations")
     load_gettext_translations(locales_dir, "messages")
 
     partial_locale_detector = partial(locale_detector, locale=locale)
@@ -88,16 +88,13 @@ def _set_loggers_level(config_loggers: dict, module_path: list):
 
 
 async def init():
-    global path
     global record
     global wakeup
 
-    path = Path(__file__).resolve().parent.parent
-
     _set_loggers_level(config.loggers, [])
 
-    record = Recorder(path)
-    wakeup = Awakenings(path)
+    record = Recorder()
+    wakeup = Awakenings()
 
     await record.load()
     await wakeup.load()
@@ -266,6 +263,8 @@ class IndexView(web.View):
 
 
 async def make_app():
+    path = Path(__file__).resolve().parent.parent
+
     # run a server
     lang = config.general.language
     set_language(lang)
@@ -279,7 +278,7 @@ async def make_app():
     session_setup(app, SimpleCookieStorage())
     app.middlewares.append(aiohttp_session_flash.middleware)
 
-    template_dir = Path(path, "templates")
+    template_dir = Path(path, "recorder/templates")
     aiohttp_jinja2.setup(
         app,
         loader=FileSystemLoader(template_dir),
@@ -298,7 +297,7 @@ async def make_app():
     )
 
     app.router.add_routes(routes)
-    static_dir = Path(path, "static")
+    static_dir = Path(path, "recorder/static")
     app.router.add_static("/static", static_dir)
 
     # cors = aiohttp_cors.setup(app, defaults={

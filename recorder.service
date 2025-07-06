@@ -4,9 +4,9 @@ StartLimitIntervalSec=300
 StartLimitBurst=5
 
 [Service]
-WorkingDirectory=/home/franck/Documents/projets/multimedia/recorder
-ExecStart=/home/franck/Documents/projets/multimedia/recorder/start.sh
-Environment=PYTHONPATH=/home/franck/Documents/projets/multimedia/recorder
+WorkingDirectory=/home/franck
+ExecStart=/home/franck/.local/bin/recorder -c /home/franck/.config/recorder/config.toml
+#Environment=
 KillSignal=SIGINT
 User=franck
 Group=franck
